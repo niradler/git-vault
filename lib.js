@@ -3,6 +3,7 @@ const Model = require("git-content/Model");
 const fs = require("fs");
 const Path = require("path");
 const merge = require("lodash.merge");
+const inquirer = require("inquirer");
 const crypter = require("./encryption");
 
 const getConfig = (config = {}) => {
@@ -126,4 +127,88 @@ const remove = async (argv) => {
   }
 };
 
-module.exports = { add, get, remove, all, getRemoteConfig };
+const init = async () => {
+  try {
+    const q = [
+      {
+        type: "input",
+        name: "project",
+        message: "project name:",
+        validate: (d) => d && d.length > 1,
+      },
+      {
+        type: "input",
+        name: "owner",
+        message: "owner/org name:",
+        validate: (d) => d && d.length > 1,
+      },
+      {
+        type: "input",
+        name: "repo",
+        message: "repo name:",
+        validate: (d) => d && d.length > 1,
+      },
+      {
+        type: "input",
+        name: "branch",
+        message: "branch name:",
+        default: "master",
+        validate: (d) => d && d.length > 1,
+      },
+    ];
+    const configFile = await inquirer.prompt(q);
+    fs.writeFileSync(
+      Path.join(process.cwd(), ".git-vault.json"),
+      JSON.stringify(configFile, null, 2)
+    );
+
+    const { storeGithubKey } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "storeGithubKey",
+        message: "Do you prefer to pass your github api key as a file?",
+        default: false,
+      },
+    ]);
+    if (storeGithubKey) {
+      const { githubApiKey } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "githubApiKey",
+          message: "github api key:",
+          validate: (d) => d && d.length > 5,
+        },
+      ]);
+      fs.writeFileSync(Path.join(process.cwd(), ".github.key"), githubApiKey);
+    }
+
+    const { storeEncryptionKey } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "storeEncryptionKey",
+        message: "Do you prefer to pass your encryption key as a file?",
+        default: false,
+      },
+    ]);
+    if (storeEncryptionKey) {
+      const { encryptionKey } = await inquirer.prompt([
+        {
+          type: "input",
+          name: "encryptionKey",
+          message: "encryption key:",
+          validate: (d) => d && d.length > 1,
+        },
+      ]);
+      fs.writeFileSync(
+        Path.join(process.cwd(), ".git-vault.key"),
+        encryptionKey
+      );
+    }
+
+    exitWith("finished!");
+  } catch (error) {
+    exitWith(error.message, 1);
+  }
+};
+
+module.exports = { add, get, remove, all, getRemoteConfig, init };
