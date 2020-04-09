@@ -1,0 +1,21 @@
+{
+  "name": "git-vault",
+  "version": "0.0.2",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "git-vault": "git-vault.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Nir Adler",
+  "license": "MIT",
+  "dependencies": {
+    "git-content": "0.0.4",
+    "inquirer": "^7.1.0",
+    "lodash.merge": "^4.6.2",
+    "yargs": "^15.3.1"
+  }
+}
