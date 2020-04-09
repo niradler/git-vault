@@ -134,26 +134,40 @@ const init = async () => {
         type: "input",
         name: "project",
         message: "project name:",
-        validate: (d) => d && d.length > 1,
+        validate: (d) => {
+          const isValid = d && d.length > 1;
+          if (!isValid) return "project is required.";
+
+          return isValid;
+        },
       },
       {
         type: "input",
         name: "owner",
         message: "owner/org name:",
-        validate: (d) => d && d.length > 1,
+        validate: (d) => {
+          const isValid = d && d.length > 1;
+          if (!isValid) return "owner is required.";
+
+          return isValid;
+        },
       },
       {
         type: "input",
         name: "repo",
         message: "repo name:",
-        validate: (d) => d && d.length > 1,
+        validate: (d) => {
+          const isValid = d && d.length > 1;
+          if (!isValid) return "repo is required.";
+
+          return isValid;
+        },
       },
       {
         type: "input",
         name: "branch",
         message: "branch name:",
         default: "master",
-        validate: (d) => d && d.length > 1,
       },
     ];
     const configFile = await inquirer.prompt(q);
@@ -176,7 +190,12 @@ const init = async () => {
           type: "input",
           name: "githubApiKey",
           message: "github api key:",
-          validate: (d) => d && d.length > 5,
+          validate: (d) => {
+            const isValid = d && d.length > 5;
+            if (!isValid) return "github api key must be at least 6 character.";
+
+            return isValid;
+          },
         },
       ]);
       fs.writeFileSync(Path.join(process.cwd(), ".github.key"), githubApiKey);
@@ -196,7 +215,12 @@ const init = async () => {
           type: "input",
           name: "encryptionKey",
           message: "encryption key:",
-          validate: (d) => d && d.length > 1,
+          validate: (d) => {
+            const isValid = d && d.length > 5;
+            if (!isValid) return "encryption key must be at least 6 character.";
+
+            return isValid;
+          },
         },
       ]);
       fs.writeFileSync(
