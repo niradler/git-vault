@@ -26,6 +26,10 @@ environment variable supported: ENCRYPTION_KEY, GITHUB_KEY, NODE_ENV
 
 ### Example
 
+```bash
+npm i git-vault express
+```
+
 ```js
 //express app
 const express = require("express");
