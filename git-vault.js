@@ -14,6 +14,20 @@ Yargs.command(
 );
 
 Yargs.command(
+  "refresh",
+  "refresh git vault encryption key.",
+  (yargs) => {
+    yargs.option("refresh-key", {
+      describe: "new encryption key.",
+      require: true,
+    });
+  },
+  async (argv) => {
+    lib.refresh(argv);
+  }
+);
+
+Yargs.command(
   "add",
   "add key value param.",
   (yargs) => {

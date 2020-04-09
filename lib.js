@@ -77,9 +77,24 @@ const getRemoteConfig = async (argv, isInit = true) => {
   return { config, model, args: argv };
 };
 
-const updateRemoteConfig = async (args, model, data) => {
+const updateRemoteConfig = async (data, model, key) => {
   data = JSON.stringify(data);
-  await model.save(crypter.encrypt(data, args["encryption-key"]));
+  await model.save(crypter.encrypt(data, key));
+};
+
+const refresh = async (argv) => {
+  try {
+    let { args, model, config } = await getRemoteConfig(argv);
+
+    await updateRemoteConfig(config, model, args["refresh-key"]);
+
+    exitWith(
+      "Encryption key replaced! (if you use file source please change it manually)"
+    );
+  } catch (error) {
+    console.log(error);
+    exitWith(error.message, 1);
+  }
 };
 
 const add = async (argv) => {
@@ -87,7 +102,7 @@ const add = async (argv) => {
     let { args, model, config } = await getRemoteConfig(argv);
     const { value, key } = args;
     config[key] = value;
-    await updateRemoteConfig(args, model, config);
+    await updateRemoteConfig(config, model, args["encryption-key"]);
 
     exitWith("Added!");
   } catch (error) {
@@ -120,7 +135,7 @@ const remove = async (argv) => {
     let { config, model, args } = await getRemoteConfig(argv);
     const { key } = args;
     delete config[key];
-    await updateRemoteConfig(args, model, config);
+    await updateRemoteConfig(config, model, args["encryption-key"]);
     exitWith("Removed!");
   } catch (error) {
     exitWith(error.message, 1);
@@ -235,4 +250,4 @@ const init = async () => {
   }
 };
 
-module.exports = { add, get, remove, all, getRemoteConfig, init };
+module.exports = { add, get, remove, all, getRemoteConfig, init, refresh };
