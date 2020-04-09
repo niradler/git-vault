@@ -116,3 +116,4 @@ dist
 .git-vault.key
 .git-vault.json
 *.key
+.vscode
