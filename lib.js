@@ -116,7 +116,7 @@ const add = async (argv) => {
   try {
     let { args, model, config } = await getRemoteConfig(argv);
     const { value, key } = args;
-    config[key] = value;
+    config[key] = encrypt(value);
     await updateRemoteConfig(config, model, args["encryption-key"]);
 
     exitWith("Added!");
