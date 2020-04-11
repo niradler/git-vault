@@ -4,7 +4,22 @@ const fs = require("fs");
 const Path = require("path");
 const merge = require("lodash.merge");
 const inquirer = require("inquirer");
-const crypter = require("./encryption");
+const Crypter = require("strcrypter");
+
+const encrypt = (obj, key) => {
+  const crypter = new Crypter({ key, iv: Crypter.createKey() });
+  const json = JSON.stringify(obj);
+  const obj = crypter.encrypt(json);
+
+  return obj;
+};
+
+const decrypt = (json, key, iv) => {
+  const crypter = new Crypter({ key, iv });
+  const obj = crypter.decrypt(json);
+
+  return obj;
+};
 
 const getConfig = (config = {}) => {
   let configFile = {};
@@ -67,19 +82,19 @@ const getRemoteConfig = async (argv, isInit = true) => {
   const model = getModel({ owner, repo, auth, branch }, path);
   try {
     let { text } = await model.init(isInit);
-    text = crypter.decrypt(text, argv["encryption-key"]);
-    config = JSON.parse(text);
+    text = JSON.parse(text);
+    text = decrypt(config.data, argv["encryption-key"], config.iv);
+    config = JSON.parse(text.data);
   } catch (error) {
-    if (isInit === false) throw error;
     if (argv.v) console.log(error);
+    if (isInit === false) throw error;
   }
 
   return { config, model, args: argv };
 };
 
-const updateRemoteConfig = async (data, model, key) => {
-  data = JSON.stringify(data);
-  await model.save(crypter.encrypt(data, key));
+const updateRemoteConfig = async (config, model, key) => {
+  await model.save(JSON.stringify(encrypt(config, key)));
 };
 
 const refresh = async (argv) => {

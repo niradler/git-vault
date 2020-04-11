@@ -20,6 +20,7 @@
     "git-content": "0.0.4",
     "inquirer": "^7.1.0",
     "lodash.merge": "^4.6.2",
+    "strcrypter": "0.0.2",
     "yargs": "^15.3.1"
   }
 }
